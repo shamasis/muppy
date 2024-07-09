@@ -1,0 +1,25 @@
+{
+  "name": "muppy",
+  "version": "1.0.0",
+  "description": "Simple CLI chat interface to converse with OpenAI",
+  "main": "index.js",
+  "bin": {
+    "muppy": "index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Shamasis Bhattacharya <mail@shamasis.net>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "openai": "^4.52.4",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "openai",
+    "cli",
+    "chat",
+    "llm"
+  ]
+}
