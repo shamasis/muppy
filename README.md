@@ -113,3 +113,4 @@ function main() {
 // Invoke main function
 main();
 ```
+![2024-07-09 at 23 02 10 - Aquamarine Buzzard](https://github.com/shamasis/muppy/assets/232373/47951607-8524-4863-993d-dc85f677ce8b)
