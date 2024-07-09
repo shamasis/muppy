@@ -12,10 +12,10 @@
   "author": "Shamasis Bhattacharya <mail@shamasis.net>",
   "license": "Apache-2.0",
   "dependencies": {
+    "colors": "^1.4.0",
     "openai": "^4.52.4",
     "prompts": "^2.4.2"
   },
-  "devDependencies": {},
   "keywords": [
     "openai",
     "cli",
