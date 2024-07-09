@@ -63,7 +63,8 @@ async function chatloop (messages, openai) {
   // Open a stream with OpenAI
   const stream = await openai.beta.chat.completions.stream({
     model: 'gpt-4',
-    messages: messages,
+    // add a system prompt letting the llm know it is a CLI chatbot
+    messages: [{ role: 'system', content: 'You are Muppy, a CLI chatbot.' }, ...messages],
     stream: true,
   });
 
