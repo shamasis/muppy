@@ -91,7 +91,7 @@ async function main () {
   const openai = await setup(process.env['OPENAI_API_KEY']),
     messages = [];
 
-  console.log(`Start chatting with the AI. ${colors.dim("Press ESC or Ctrl+C to stop.")}`);
+  console.log(`Start chatting with the AI. ${colors.dim("Press ESC or Ctrl+C to stop.")}\n`);
   chatloop(messages, openai);
 }
 
