@@ -2,14 +2,22 @@
   "name": "muppy",
   "version": "1.0.3",
   "description": "Simple CLI chat interface to converse with OpenAI",
+  "author": "Shamasis Bhattacharya <mail@shamasis.net>",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://shamasis@github.com/shamasis/muppy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shamasis/muppy/issues"
+  },
+  "homepage": "https://github.com/shamasis/muppy#readme",
   "bin": {
     "muppy": "index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Shamasis Bhattacharya <mail@shamasis.net>",
   "license": "Apache-2.0",
   "dependencies": {
     "colors": "^1.4.0",
