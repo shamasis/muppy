@@ -1,12 +1,14 @@
 const tools = [{
   type: "function",
   description: "This tool returns the current date and time as `Day Mon DD YYYY HH:mm:ss GMT+XXXX (Time Zone)`",
+  activity: "reading system time",
   function: {
     function: getCurrentDateTime
   }
 }, {
   type: "function",
   description: "This tool exits the current chat process after showing a message.",
+  activity: "exiting process",
   function: {
     function: exitCurrentChatProcess,
     parse: JSON.parse,
@@ -24,6 +26,7 @@ const tools = [{
 }, {
   type: "function",
   description: "This tool fetches a response from a given URL and returns the status code and response body as text.",
+  activity: "fetch url data",
   function: {
     function: fetchResponseFromURL,
     parse: JSON.parse,
@@ -41,6 +44,7 @@ const tools = [{
 }, {
   type: "function",
   description: "This tool writes a provided string to the clipboard.",
+  activity: "writing to clipboard",
   function: {
     function: writeToClipboard,
     parse: JSON.parse,
@@ -57,12 +61,15 @@ const tools = [{
   }
 }, {
   type: "function",
+  activity: "reading from clipboard",
   description: "This tool reads and returns the current content from the clipboard.",
   function: {
     function: readFromClipboard,
   }
 }];
 
+
+const colors = require('colors/safe');
 
 // Function to get the current date and time
 async function getCurrentDateTime() {
@@ -94,5 +101,17 @@ async function readFromClipboard() {
   const clipboard = (await import('clipboardy')).default;
   return await clipboard.read()
 }
+
+tools.forEach((tool) => {
+  let fn = tool.function.function;
+  tool.function.name = fn.name;
+
+  tool.function.function = async function (args) {
+    console.log(colors.dim('…', tool.activity) );
+    return await fn(args);
+  };
+  
+
+});
 
 module.exports = tools;
