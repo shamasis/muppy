@@ -15,8 +15,12 @@
 
 const OpenAI = require('openai'),
   prompts = require('prompts'),
-  colors = require('colors/safe');
+  colors = require('colors/safe'),
+  fs = require('node:fs/promises');
 
+async function readfile (filepath = '') {
+  return await fs.readFile(filepath, { encoding: 'utf8' });
+};
 
 // this function is used to setup OpenAI JS SDK.
 async function setup (apiKey) {
@@ -47,7 +51,7 @@ async function setup (apiKey) {
   return new OpenAI({ // Initialize OpenAI with API key
     apiKey: apiKey
   });
-}
+};
 
 // Function to handle user input and generate AI response
 async function chatloop (messages, openai) {
@@ -61,11 +65,13 @@ async function chatloop (messages, openai) {
   messages.push({ role: 'user', content: response.input });
 
   // Open a stream with OpenAI
-  const stream = await openai.beta.chat.completions.stream({
+  const stream = await openai.beta.chat.completions.runTools({
     model: 'gpt-4',
     // add a system prompt letting the llm know it is a CLI chatbot
-    messages: [{ role: 'system', content: 'You are Muppy, a CLI chatbot.' }, ...messages],
-    stream: true,
+    messages: [{ role: 'system', content: await readfile('systemprompt.txt') }, 
+      ...messages],
+    tools: require('./tools'),
+    stream: true
   });
 
   let aiResponse = '';
