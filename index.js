@@ -16,14 +16,18 @@
 const OpenAI = require('openai'),
   prompts = require('prompts'),
   colors = require('colors/safe'),
-  fs = require('node:fs/promises');
 
-async function readfile (filepath = '') {
-  return await fs.readFile(filepath, { encoding: 'utf8' });
-};
+  templates = require('./templates'),
+  tools = require('./tools');
 
-// this function is used to setup OpenAI JS SDK.
-async function setup (apiKey) {
+/**
+ * This function is used to setup OpenAI JS SDK.
+ * 
+ * @param {?string} apiKey Provide API key to use for setup. This is optional as
+ *        the function fetches the API key from environment variables and shows
+ *        a proper help and bailout information if one is not provided.
+ */
+async function setup (apiKey = process.env['OPENAI_API_KEY']) {
   // check presence of Open AI API Key in environement. if not, gather from CLI
   if (!apiKey) {
     console.log (
@@ -53,8 +57,16 @@ async function setup (apiKey) {
   });
 };
 
-// Function to handle user input and generate AI response
-async function chatloop (messages, openai) {
+/**
+ * Function to handle user input and generate AI response. This function 
+ * continues to work in a loop
+ * 
+ * @param {OpenAI} openai expects an instance of OpenAI class instance.
+ * @param {Object} tools
+ * @param {Object} templates
+ */
+async function chatloop (openai, tools, templates, messages = []) {
+  // Get input from user
   const response = await prompts({
     type: 'text',
     name: 'input',
@@ -62,20 +74,19 @@ async function chatloop (messages, openai) {
   }, { onCancel: () => process.exit(0) });
 
   // Add user's input to the message history
-  messages.push({ role: 'user', content: response.input + 
-    '\n\nPS: use your tools to see if it helps.' });
+  messages.push({ role: 'user', content: response.input });
 
   // Open a stream with OpenAI
   const stream = await openai.beta.chat.completions.runTools({
     model: 'gpt-4o',
     // add a system prompt letting the llm know it is a CLI chatbot
-    messages: [{ role: 'system', content: await readfile('systemprompt.txt') }, 
+    messages: [{ role: 'system', content: templates.systemBase }, 
       ...messages],
-    tools: require('./tools'),
+    tools: tools,
     stream: true
   });
 
-  let aiResponse = '';
+  let aiResponse = ''; // accumulator for streaming AI response
 
   // Attach stream functions to handle AI response
   stream
@@ -87,20 +98,18 @@ async function chatloop (messages, openai) {
       // Add AI's response to the message history
       messages.push({ role: 'assistant', content: aiResponse });
       console.log('\n');
-      // Recurse to continue the conversation
-      chatloop(messages, openai);
+
+      // ** RECURSION POINT **
+      chatloop(openai, tools, templates, messages);
     });
 }
 
 // Start the conversation loop
-async function main () {
+(async function main () {
   // For extra safety, pass the API key as an environment variable
-  const openai = await setup(process.env['OPENAI_API_KEY']),
+  const openai = await setup(),
     messages = [];
 
   console.log(`Start chatting with the AI. ${colors.dim("Press ESC or Ctrl+C to stop.")}\n`);
-  chatloop(messages, openai);
-}
-
-// Invoke main function
-main();
+  chatloop(openai, tools, templates);
+})();

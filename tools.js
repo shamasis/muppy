@@ -1,3 +1,11 @@
+/**
+ * @fileOverview
+ * All tools are loaded through this module. For legibility, all functions are defined
+ * at one place on top and their corresponding functions are defined below. Yeah, it 
+ * might read messy, but it is very useful at this stage where the tools are evolving
+ * and a common tool registration pattern for this module is not arrived at yet.
+ */
+
 const tools = [{
   type: "function",
   description: "This tool returns the current date and time as `Day Mon DD YYYY HH:mm:ss GMT+XXXX (Time Zone)`",
@@ -91,10 +99,7 @@ const tools = [{
   }
 }];
 
-
-const colors = require('colors/safe');
-
-// Function to get the current date and time
+/* -------------------------------------------------------------------------- */
 async function getCurrentDateTime() {
   return (new Date()).toString();
 }
@@ -126,7 +131,14 @@ async function readFromClipboard() {
   return await clipboard.read()
 }
 
+/* -------------------------------------------------------------------------- */
+const colors = require('colors/safe');
+
+// Process each function tool for CLI usage.
+// - add activity logger for each tool.
 tools.forEach((tool) => {
+  if (tool.type !== 'function') return;
+
   let fn = tool.function.function;
   tool.function.name = fn.name;
 
@@ -134,8 +146,6 @@ tools.forEach((tool) => {
     console.log(colors.dim('…', tool.activity) );
     return await fn(args);
   };
-  
-
 });
 
 module.exports = tools;
