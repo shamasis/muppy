@@ -62,11 +62,12 @@ async function chatloop (messages, openai) {
   }, { onCancel: () => process.exit(0) });
 
   // Add user's input to the message history
-  messages.push({ role: 'user', content: response.input });
+  messages.push({ role: 'user', content: response.input + 
+    '\n\nPS: use your tools to see if it helps.' });
 
   // Open a stream with OpenAI
   const stream = await openai.beta.chat.completions.runTools({
-    model: 'gpt-4',
+    model: 'gpt-4o',
     // add a system prompt letting the llm know it is a CLI chatbot
     messages: [{ role: 'system', content: await readfile('systemprompt.txt') }, 
       ...messages],
