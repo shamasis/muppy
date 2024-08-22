@@ -31,21 +31,23 @@ async function setup (apiKey = process.env['OPENAI_API_KEY']) {
   // check presence of Open AI API Key in environement. if not, gather from CLI
   if (!apiKey) {
     console.log (
-      'You need a valid OpenAI API Key to use muppy. Get yours from\n' +
+      'You need a valid OpenAI API Key to use muppy. Get yours from ' +
       colors.underline('https://platform.openai.com/api-keys') + '\n\n' +
 
       colors.dim('Muppy does not save or log your API Key. To help Muppy find and use ' +
       'your saved API Keys, save the API key in your environment variable as ' +
       colors.bold('OPENAI_API_KEY') + '. You can set environment varable ' +
       'using the command export OPENAI_API_KEY="your-api-key" ' + 
-      '(or setx OPENAI_API_KEY "your-api-key" on Windows.)\n')
+      '(or setx OPENAI_API_KEY "your-api-key" on Windows.)\n\n' +
+
+      colors.dim('Muppy does not store your API keys.')
+      )
     );
 
     const response = await prompts({
       type: 'password',
       name: 'apiKey',
       message: 'Enter OpenAI API Key',
-      description: 'aaa'
     }, { onCancel: () => process.exit(0) });
 
     apiKey = response.apiKey;
@@ -74,7 +76,8 @@ async function chatloop (openai, tools, templates, messages = []) {
   }, { onCancel: () => process.exit(0) });
 
   // Add user's input to the message history
-  messages.push({ role: 'user', content: response.input });
+  messages.push({ role: 'user', content: response.input + 
+    '\n\nPS: You may use your tools to see if it helps.' });
 
   // Open a stream with OpenAI
   const stream = await openai.beta.chat.completions.runTools({
