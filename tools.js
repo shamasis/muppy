@@ -36,6 +36,29 @@ const tools = [{
         url: {
           type: "string",
           description: "The URL to fetch the response from"
+        },
+        options: {
+          type: "object",
+          description: "Options to configure the request, such as setting method, headers, auth, etc",
+          properties: {
+                method: {
+                  type: 'string',
+                  description: 'The HTTP method (e.g., GET, POST, PUT, DELETE)',
+                  enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
+                  default: 'GET'
+                },
+                headers: {
+                  type: 'object',
+                  description: 'Headers to send with the request',
+                  additionalProperties: {
+                    type: 'string'
+                  }
+                },
+                body: {
+                  type: ['string', 'object', 'null'],
+                  description: 'The body of the request, usually for POST or PUT requests'
+                }
+          }
         }
       },
       required: ["url"]
@@ -84,7 +107,8 @@ function exitCurrentChatProcess(args = {}) {
 
 // Function to fetch a response from a given URL
 async function fetchResponseFromURL(args = {}) {
-  const response = await (await import("node-fetch")).default(args.url);
+
+  const response = await (await import("node-fetch")).default(args.url, args.options);
 
   return {
     statusCode: response.status,
